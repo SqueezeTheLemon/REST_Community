@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -58,6 +59,24 @@ public class GlobalExceptionHandler {
                         "요청 본문이 올바르지 않습니다."
                 ),
                 BAD_REQUEST
+        );
+    }
+
+    // actorId가 없거나, 존재하지 않는 회원일 때
+    public static class UnauthenticatedException extends RuntimeException {
+        public UnauthenticatedException() {
+            super("로그인 후 이용해주세요.");
+        }
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<RsData<Void>> handle(UnauthenticatedException ex) {
+        return new ResponseEntity<>(
+                new RsData<>(
+                        "401-1",
+                        ex.getMessage()
+                ),
+                UNAUTHORIZED
         );
     }
 
