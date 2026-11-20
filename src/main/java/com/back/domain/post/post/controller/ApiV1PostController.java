@@ -51,8 +51,14 @@ public class ApiV1PostController {
     @DeleteMapping("/{id}")
     @Transactional
     @Operation(summary = "삭제")
-    public RsData<Void> delete(@PathVariable int id) {
+    public RsData<Void> delete(
+            @PathVariable int id,
+            @RequestParam(required = false) Integer actorId
+    ) {
+        // 순서: 401(누구?) → 404(대상 있음?) → 403(권한 있음?)
+        Member actor = memberService.getActor(actorId);
         Post post = postService.findById(id).get();
+        post.checkActorCanDelete(actor);
 
         postService.delete(post);
 
