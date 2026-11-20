@@ -13,6 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
@@ -57,6 +58,32 @@ public class GlobalExceptionHandler {
                         "요청 본문이 올바르지 않습니다."
                 ),
                 BAD_REQUEST
+        );
+    }
+
+    // 회원가입 시 username 중복
+    public static class MemberDuplicateUsernameException extends RuntimeException {
+        private final String username;
+
+        public MemberDuplicateUsernameException(String username) {
+            super("%s(은)는 이미 사용중인 username 입니다.".formatted(username));
+            this.username = username;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+    }
+
+    // 핸들러 파라미터는 "잡은 예외 객체"를 받는다 (String X)
+    @ExceptionHandler(MemberDuplicateUsernameException.class)
+    public ResponseEntity<RsData<Void>> handle(MemberDuplicateUsernameException ex) {
+        return new ResponseEntity<>(
+                new RsData<>(
+                        "409-1",
+                        ex.getMessage()
+                ),
+                CONFLICT
         );
     }
 }
