@@ -58,6 +58,8 @@ public class ApiV1PostCommentControllerTest {
                 .andExpect(jsonPath("$.id").value(postComment.getId()))
                 .andExpect(jsonPath("$.createDate").value(Matchers.startsWith(postComment.getCreateDate().toString().substring(0, 20))))
                 .andExpect(jsonPath("$.modifyDate").value(Matchers.startsWith(postComment.getModifyDate().toString().substring(0, 20))))
+                .andExpect(jsonPath("$.authorId").value(postComment.getAuthor().getId()))
+                .andExpect(jsonPath("$.authorName").value(postComment.getAuthor().getName()))
                 .andExpect(jsonPath("$.content").value(postComment.getContent()));
     }
 
