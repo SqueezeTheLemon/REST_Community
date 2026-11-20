@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -77,6 +78,25 @@ public class GlobalExceptionHandler {
                         ex.getMessage()
                 ),
                 UNAUTHORIZED
+        );
+    }
+
+    // 글/댓글 수정·삭제에서 작성자가 아닐 때
+    // 주의: java.nio.file.AccessDeniedException과 이름이 같으니 import 조심
+    public static class AccessDeniedException extends RuntimeException {
+        public AccessDeniedException() {
+            super("권한이 없습니다.");
+        }
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<RsData<Void>> handle(AccessDeniedException ex) {
+        return new ResponseEntity<>(
+                new RsData<>(
+                        "403-1",
+                        ex.getMessage()
+                ),
+                FORBIDDEN
         );
     }
 

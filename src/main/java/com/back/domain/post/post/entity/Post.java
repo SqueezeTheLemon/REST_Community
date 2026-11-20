@@ -2,6 +2,7 @@ package com.back.domain.post.post.entity;
 
 import com.back.domain.member.member.entity.Member;
 import com.back.domain.post.postComment.entity.PostComment;
+import com.back.global.globalExceptionHandler.GlobalExceptionHandler.AccessDeniedException;
 import com.back.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -34,6 +35,15 @@ public class Post extends BaseEntity {
         this.author = author;
         this.title = title;
         this.content = content;
+    }
+
+    // author는 LAZY 프록시라서 equals 대신 id로 비교 (BaseEntity.equals는 getClass를 비교함)
+    public void checkActorCanModify(Member actor) {
+        if (author.getId() != actor.getId()) throw new AccessDeniedException();
+    }
+
+    public void checkActorCanDelete(Member actor) {
+        checkActorCanModify(actor);
     }
 
     public void modify(String title, String content) {
